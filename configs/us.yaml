@@ -1,0 +1,35 @@
+region: US
+seed: 42
+
+population:
+  size: 1000
+  core_ratio: 0.10
+  source_csv: null
+  group_fields: [age_group, income_group, education_group, location_group]
+
+information:
+  news_jsonl: ../examples/us/news.jsonl
+  indicators_csv: ../examples/us/indicators.csv
+  news_weight: 0.45
+  indicator_weight: 0.55
+
+prediction:
+  provider: local
+  signal_strength: 0.08
+  endpoint: https://api.openai.com/v1/chat/completions
+  model: YOUR_MODEL_NAME
+  timeout_seconds: 60
+
+bayesian:
+  prior_strength: 20
+
+correction:
+  history_csv: ../examples/us/history.csv
+  weight: 0.50
+  max_absolute_adjustment: 10
+
+credentials:
+  model_api_key: CONSUMERSIM_MODEL_API_KEY
+
+output:
+  directory: ../outputs
