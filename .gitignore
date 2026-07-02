@@ -1,4 +1,5 @@
 outputs/
+site-dist/
 .env
 __pycache__/
 *.py[cod]

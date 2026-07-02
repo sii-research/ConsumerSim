@@ -1,0 +1,100 @@
+name: Update and deploy ConsumerSim site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      month:
+        description: Target month in YYYY-MM. Defaults to the as-of month.
+        required: false
+      as_of:
+        description: Information cutoff in YYYY-MM-DD. Defaults to today's Asia/Shanghai date.
+        required: false
+  schedule:
+    - cron: "0 6 * * 1"
+    - cron: "30 6 1 * *"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: consumersim-pages
+  cancel-in-progress: false
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      CONSUMERSIM_MODEL_API_KEY: ${{ secrets.CONSUMERSIM_MODEL_API_KEY }}
+      CONSUMERSIM_MODEL_ENDPOINT: ${{ vars.CONSUMERSIM_MODEL_ENDPOINT }}
+      CONSUMERSIM_MODEL_NAME: ${{ vars.CONSUMERSIM_MODEL_NAME }}
+      CONSUMERSIM_PREDICTION_PROVIDER: ${{ vars.CONSUMERSIM_PREDICTION_PROVIDER || 'local' }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -e .
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Generate site data
+        shell: bash
+        run: |
+          args=()
+          if [ -n "${{ inputs.month }}" ]; then
+            args+=(--month "${{ inputs.month }}")
+          fi
+          if [ -n "${{ inputs.as_of }}" ]; then
+            args+=(--as-of "${{ inputs.as_of }}")
+          fi
+          python scripts/generate_site_data.py "${args[@]}"
+
+      - name: Commit updated data
+        shell: bash
+        run: |
+          if git diff --quiet -- data/consumersim_site_data.csv; then
+            echo "No site data changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/consumersim_site_data.csv
+          git commit -m "Update ConsumerSim site data"
+          git push
+
+      - name: Build static Pages artifact
+        shell: bash
+        run: |
+          rm -rf site-dist
+          mkdir site-dist
+          cp index.html app.js styles.css site-dist/
+          cp -R assets data site-dist/
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site-dist
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -83,6 +83,8 @@ class ConsumerPipeline:
                 "combined_score": environment.combined_score,
                 "news_count": len(environment.news_items),
                 "indicator_count": len(environment.indicators),
+                "news_items": [asdict(item) for item in environment.news_items[-8:]],
+                "indicators": [asdict(item) for item in environment.indicators[-8:]],
             },
             correction=asdict(correction),
             group_posteriors=posteriors,

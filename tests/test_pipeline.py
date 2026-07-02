@@ -24,6 +24,8 @@ class PipelineTest(unittest.TestCase):
                 self.assertEqual(result.region, region.upper())
                 self.assertEqual(result.population_size, 120)
                 self.assertTrue(0 <= result.corrected_score <= 200)
+                self.assertIn("news_items", result.environment)
+                self.assertIn("indicators", result.environment)
                 self.assertTrue((output_path / "result.json").exists())
                 self.assertTrue((output_path / "population_responses.csv").exists())
 

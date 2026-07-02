@@ -205,3 +205,44 @@ python -m unittest discover -s tests -v
 ```
 
 Tests cover all three regional configurations, point-in-time information filtering, Bayesian population expansion, strict t-1 debiasing, and credential validation.
+
+## 9. Static Forecast Website
+
+The repository also contains the ConsumerSim static website:
+
+```text
+index.html
+app.js
+styles.css
+assets/
+data/consumersim_site_data.csv
+```
+
+The site reads `data/consumersim_site_data.csv` at runtime. To refresh the weekly and monthly forecast rows locally:
+
+```powershell
+python scripts/generate_site_data.py --month 2026-07 --as-of 2026-07-01
+```
+
+If `--month` or `--as-of` is omitted, the script uses the current UTC date and its month. The script runs the Python backend pipeline for US, EU, and Japan, updates the CSV used by the frontend, and leaves generated runtime artifacts under `outputs/`.
+
+## 10. GitHub Actions Deployment
+
+`.github/workflows/update-site.yml` runs on Mondays, on the first day of each month, and manually through `workflow_dispatch`. It:
+
+1. installs the Python package,
+2. runs the unit tests,
+3. regenerates `data/consumersim_site_data.csv`,
+4. commits the refreshed CSV back to `main` when it changed,
+5. deploys `index.html`, `app.js`, `styles.css`, `assets/`, and `data/` to GitHub Pages.
+
+To use an API-compatible model, configure repository settings instead of committing credentials:
+
+```text
+Secret:   CONSUMERSIM_MODEL_API_KEY
+Variable: CONSUMERSIM_PREDICTION_PROVIDER=openai_compatible
+Variable: CONSUMERSIM_MODEL_NAME=<model name>
+Variable: CONSUMERSIM_MODEL_ENDPOINT=<chat completions endpoint>
+```
+
+Leave `CONSUMERSIM_PREDICTION_PROVIDER` unset or set to `local` for the deterministic local predictor. In GitHub, set Pages source to "GitHub Actions" before relying on the deployment job.
