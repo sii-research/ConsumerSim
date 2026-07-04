@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">ConsumerSim icon</title>
+  <desc id="desc">A network of simulated consumers with a rising confidence forecast line.</desc>
+  <rect x="5" y="5" width="54" height="54" fill="#fffdf8" stroke="#101010" stroke-width="3"/>
+  <path d="M16 44 27 34 37 39 49 22" fill="none" stroke="#d64f2a" stroke-width="4" stroke-linecap="square" stroke-linejoin="miter"/>
+  <circle cx="16" cy="44" r="5" fill="#fffdf8" stroke="#101010" stroke-width="3"/>
+  <circle cx="27" cy="34" r="5" fill="#fffdf8" stroke="#101010" stroke-width="3"/>
+  <circle cx="37" cy="39" r="5" fill="#fffdf8" stroke="#101010" stroke-width="3"/>
+  <circle cx="49" cy="22" r="5" fill="#fffdf8" stroke="#101010" stroke-width="3"/>
+  <path d="M18 19h16M18 25h10M18 31h5" stroke="#101010" stroke-width="3" stroke-linecap="square"/>
+</svg>

@@ -1,0 +1,71 @@
+name: Refresh Forecast Site
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  refresh-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: python -m pip install -e .[dev]
+
+      - name: Refresh static site data
+        env:
+          CONSUMERSIM_API_BASE_URL: ${{ secrets.CONSUMERSIM_API_BASE_URL || vars.CONSUMERSIM_API_BASE_URL }}
+          CONSUMERSIM_API_KEY: ${{ secrets.CONSUMERSIM_API_KEY }}
+          CONSUMERSIM_API_KEY_HEADER: ${{ vars.CONSUMERSIM_API_KEY_HEADER }}
+          CONSUMERSIM_API_KEY_SCHEME: ${{ vars.CONSUMERSIM_API_KEY_SCHEME }}
+          CONSUMERSIM_SITE_DATA_PATH: ${{ vars.CONSUMERSIM_SITE_DATA_PATH }}
+          CONSUMERSIM_TIMEOUT_SECONDS: ${{ vars.CONSUMERSIM_TIMEOUT_SECONDS }}
+        run: python scripts/refresh_site_data.py --output site/data/consumersim_site_data.csv
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/data/consumersim_site_data.csv
+          if git diff --cached --quiet; then
+            echo "No site data changes to commit."
+          else
+            git commit -m "Refresh ConsumerSim site data"
+            git push
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
