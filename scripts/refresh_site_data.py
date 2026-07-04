@@ -3,13 +3,16 @@ from __future__ import annotations
 import argparse
 import asyncio
 import csv
+import sys
 from io import StringIO
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from consumersim_mcp_proxy.client import ConsumerSimBackend
 
 
-ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "site" / "data" / "consumersim_site_data.csv"
 REQUIRED_COLUMNS = {"as_of", "record_type", "region"}
 REQUIRED_RECORD_TYPES = {"monthly_prediction", "weekly_prediction"}
