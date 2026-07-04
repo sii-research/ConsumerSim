@@ -201,12 +201,6 @@ as_of,record_type,region,...
 2026-07-04,monthly_prediction,us,...
 ```
 
-The website reads the static CSV from:
-
-```text
-site/data/consumersim_site_data.csv
-```
-
 ## Repository Boundary
 
 This public repository should contain only:
