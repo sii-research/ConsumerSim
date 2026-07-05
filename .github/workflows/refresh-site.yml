@@ -55,6 +55,16 @@ jobs:
           )
           PY
 
+      - name: Refresh Pages artifact site data
+        env:
+          CONSUMERSIM_API_BASE_URL: ${{ secrets.CONSUMERSIM_API_BASE_URL || vars.CONSUMERSIM_API_BASE_URL }}
+          CONSUMERSIM_API_KEY: ${{ secrets.CONSUMERSIM_API_KEY }}
+          CONSUMERSIM_API_KEY_HEADER: ${{ vars.CONSUMERSIM_API_KEY_HEADER }}
+          CONSUMERSIM_API_KEY_SCHEME: ${{ vars.CONSUMERSIM_API_KEY_SCHEME }}
+          CONSUMERSIM_SITE_DATA_PATH: ${{ vars.CONSUMERSIM_SITE_DATA_PATH }}
+          CONSUMERSIM_TIMEOUT_SECONDS: ${{ vars.CONSUMERSIM_TIMEOUT_SECONDS }}
+        run: python scripts/refresh_site_data.py --output site/data/consumersim_site_data.csv
+
       - name: Run tests
         run: python -m pytest -q
 
