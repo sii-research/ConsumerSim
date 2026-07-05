@@ -141,18 +141,19 @@ The included workflow:
 
 does the following:
 
-1. Calls the private backend for the latest forecast CSV.
-2. Validates the CSV structure.
-3. Writes the result to `site/data/consumersim_site_data.csv`.
-4. Commits the updated CSV when it changes.
-5. Deploys the `site/` directory to GitHub Pages.
+1. Optionally writes `site/site-config.js` from `CONSUMERSIM_SITE_DATA_URL`.
+2. Runs the public interface tests.
+3. Deploys the `site/` directory to GitHub Pages.
+
+The repository does not commit `site/data/consumersim_site_data.csv`. The
+website reads site data at runtime from `window.CONSUMERSIM_SITE_DATA_URL` or
+from `/api/site-data` when served by the local web bridge.
 
 Repository setup:
 
 - Set Pages source to `GitHub Actions`.
-- Allow GitHub Actions `Read and write permissions`.
-- Add `CONSUMERSIM_API_BASE_URL` as a repository variable.
-- Add `CONSUMERSIM_API_KEY` as a repository secret if the backend requires a token.
+- Add `CONSUMERSIM_SITE_DATA_URL` as a repository variable when deploying to
+  GitHub Pages.
 
 Do not put source data API keys or model API keys in GitHub. Those belong only
 on the private backend server.
@@ -207,12 +208,13 @@ This public repository should contain only:
 
 - MCP proxy code
 - public website assets
-- GitHub Pages refresh workflow
+- GitHub Pages deployment workflow
 - tests for the public interface
 - examples and documentation for users
 
 Do not commit:
 
+- generated site CSV files
 - private forecasting pipeline code
 - model prompts or internal simulation logic
 - private data refresh scripts

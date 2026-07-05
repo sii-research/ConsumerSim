@@ -1,4 +1,4 @@
-name: Refresh Forecast Site
+name: Deploy Forecast Site
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
       - ".github/workflows/refresh-site.yml"
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -38,32 +38,25 @@ jobs:
       - name: Install package
         run: python -m pip install -e .[dev]
 
-      - name: Refresh static site data
-        if: github.event_name != 'push'
+      - name: Configure public site data endpoint
+        if: vars.CONSUMERSIM_SITE_DATA_URL != ''
         env:
-          CONSUMERSIM_API_BASE_URL: ${{ secrets.CONSUMERSIM_API_BASE_URL || vars.CONSUMERSIM_API_BASE_URL }}
-          CONSUMERSIM_API_KEY: ${{ secrets.CONSUMERSIM_API_KEY }}
-          CONSUMERSIM_API_KEY_HEADER: ${{ vars.CONSUMERSIM_API_KEY_HEADER }}
-          CONSUMERSIM_API_KEY_SCHEME: ${{ vars.CONSUMERSIM_API_KEY_SCHEME }}
-          CONSUMERSIM_SITE_DATA_PATH: ${{ vars.CONSUMERSIM_SITE_DATA_PATH }}
-          CONSUMERSIM_TIMEOUT_SECONDS: ${{ vars.CONSUMERSIM_TIMEOUT_SECONDS }}
-        run: python scripts/refresh_site_data.py --output site/data/consumersim_site_data.csv
+          CONSUMERSIM_SITE_DATA_URL: ${{ vars.CONSUMERSIM_SITE_DATA_URL }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          value = os.environ["CONSUMERSIM_SITE_DATA_URL"]
+          Path("site/site-config.js").write_text(
+              f"window.CONSUMERSIM_SITE_DATA_URL = {json.dumps(value)};\n",
+              encoding="utf-8",
+          )
+          PY
 
       - name: Run tests
         run: python -m pytest -q
-
-      - name: Commit refreshed data
-        if: github.event_name != 'push'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/data/consumersim_site_data.csv
-          if git diff --cached --quiet; then
-            echo "No site data changes to commit."
-          else
-            git commit -m "Refresh ConsumerSim site data"
-            git push
-          fi
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

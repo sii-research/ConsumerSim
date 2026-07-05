@@ -1257,7 +1257,7 @@ async function init() {
 
 async function loadSiteDataCsv() {
   const configuredSource = window.CONSUMERSIM_SITE_DATA_URL;
-  const sources = [configuredSource, "./data/consumersim_site_data.csv", "/api/site-data"].filter(Boolean);
+  const sources = [configuredSource, "/api/site-data"].filter(Boolean);
   let lastError = null;
   for (const source of sources) {
     try {
