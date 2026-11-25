@@ -1,231 +1,76 @@
-# ConsumerSim Forecast Interface
+# ConsumerSim: Salience-Driven Generative Social Simulation for Consumer Confidence
 
-ConsumerSim provides consumer confidence forecasts for three markets:
+Official reproduction codebase, frozen evaluation outputs, and public forecast interface for **ConsumerSim** across the **United States (Michigan ICS)**, **EU27 (Eurostat BS-CSMCI)**, and **Japan (Cabinet Office ESRI CCI)** from **July 2014 to September 2026** (147 aligned months, zero aggregate $\lambda$ blending).
 
-- `US`
-- `EU27`
-- `JP`
+> **Note on prospective longitudinal panel data:** Primary three-wave U.S. human panel records are withheld pending publication and are not included in this release; de-identified replication tables will be deposited upon publication.
 
-Users can access the forecasts in two ways:
+---
 
-- View the public forecast website hosted from this repository.
-- Connect to the MCP server and ask for forecasts by region, month, and optional week.
-
-This repository is an interface package only. It does not publish the private
-forecasting pipeline, model prompts, data refresh logic, source API keys, or
-private datasets.
-
-## What You Can Ask For
-
-Use `forecast_lookup` when you need a forecast value.
-
-Monthly forecast:
-
-```json
-{
-  "region": "US",
-  "month": "2026-07"
-}
-```
-
-Weekly forecast:
-
-```json
-{
-  "region": "EU27",
-  "month": "2026-07",
-  "week": 1
-}
-```
-
-Supported inputs:
-
-- `region`: `US`, `EU27`, or `JP`
-- `month`: target month in `YYYY-MM` format
-- `week`: optional week number within that month, such as `1`, `2`, `3`, or `4`
-
-Use `forecast_times` to see which forecast periods are available.
-
-```json
-{
-  "region": "JP"
-}
-```
-
-## Typical Response
-
-`forecast_lookup` returns a forecast snapshot like this:
-
-```json
-{
-  "region": "EU27",
-  "cadence": "weekly",
-  "requested_month": "2026-06",
-  "requested_week": "Jun W4",
-  "target_month": "2026-07",
-  "target_period": "Jul-26",
-  "week_label": "Jun W4",
-  "as_of": "2026-07-04",
-  "forecast": -13.32,
-  "interval_low": -14.71,
-  "interval_high": -12.39,
-  "signal": "Softening signal",
-  "interpretation": "Weekly nowcast through 2026-06-27 from the ConsumerSim pipeline."
-}
-```
-
-The exact fields may vary by backend version, but the response is designed to
-include the requested region and time, the forecast value, a confidence band,
-and a short interpretation.
-
-## Run As An MCP Server
-
-Install the package:
-
-```powershell
-python -m pip install -e .
-```
-
-Configure the private backend endpoint:
-
-```powershell
-$env:CONSUMERSIM_API_BASE_URL = "https://your-consumersim-backend.example.com"
-$env:CONSUMERSIM_API_KEY = "<your access token>"
-```
-
-Start the MCP server:
-
-```powershell
-consumersim-mcp
-```
-
-The MCP server exposes:
-
-- `forecast_lookup`
-- `forecast_times`
-
-It forwards requests to the configured ConsumerSim backend and returns the
-backend result to the MCP client.
-
-## Run The Website Locally
-
-The website is a static forecast dashboard under `site/`.
-
-For a local preview backed by the private API:
-
-```powershell
-python -m pip install -e .
-$env:CONSUMERSIM_API_BASE_URL = "https://your-consumersim-backend.example.com"
-$env:CONSUMERSIM_API_KEY = "<your access token>"
-consumersim-web
-```
-
-Open:
+## Repository Layout
 
 ```text
-http://127.0.0.1:4173
+.
+├── consumersim/               # Core framework (Persona Substrate, Uniform Exposure Layer,
+│                              # Situational Signal Field, Contrastive Elicitation, Household Inertia)
+├── experiments/
+│   ├── eu_jp/                 # EU27 (27 member states, N=1,350/mo) & Japan (8 regions, N=1,200/mo)
+│   ├── us_baselines/          # Information-matched ML (+news embeddings), Direct LLM, open-loop,
+│   │                          # ablations, subgroups, scale curves, downstream activity, weekly paths
+│   ├── robustness/            # 4 LLM families, 4 prompt templates, 3 random seeds
+│   ├── mechanisms/            # 3-tier exposure decomposition, negative controls, orthogonal
+│   │                          # 144-persona counterfactuals, observable-input exogenous salience
+│   └── memory_audit/          # Undated-snapshot date/ICS recall probe & error-inheritance audit
+├── results/                   # Frozen reproducible CSV/JSON outputs (zero API cost)
+├── scripts/
+│   ├── reproduce_tables.py    # One-command deterministic verification of Tables 1–3, E1–E2, G4–G7
+│   ├── build_site_data_v4.py  # Generates site/data/consumersim_site_data.csv (legacy + v4)
+│   └── refresh_site_data.py   # Validates and normalizes site CSV for GitHub Pages CI
+├── site/                      # Static forecast dashboard deployed to GitHub Pages
+├── live_pipeline/             # Monthly push-sync helper for live inference servers (e.g., sociox)
+├── consumersim_mcp_proxy/     # MCP server & local web preview interface
+└── .github/workflows/         # Automated GitHub Pages deployment (main + live-data overlay)
 ```
 
-The local web bridge serves the static site and proxies `/api/site-data` to the
-private backend. This keeps backend credentials out of browser JavaScript.
+---
 
-## Public Website Deployment
+## Quick Start: Zero-API Verification of All US / EU27 / Japan Tables
 
-The recommended public deployment is GitHub Pages.
+Reproduce **Table 1** (US / EU27 / Japan, 147-month full sample and 2023–2026 out-of-sample), **Table 2** (top-10 U.S. shocks), **Table 3** (component ablations), **Tables E1–E2** (multi-month open-loop rollout and memory audit), and **Tables G4–G7** (robustness, three-tier decomposition, orthogonal counterfactuals, and exogenous salience) deterministically without API calls:
 
-The included workflow:
-
-```text
-.github/workflows/refresh-site.yml
+```bash
+pip install -r requirements.txt
+python scripts/reproduce_tables.py
 ```
 
-does the following:
+---
 
-1. Optionally writes `site/site-config.js` from `CONSUMERSIM_SITE_DATA_URL`.
-2. Runs the public interface tests.
-3. Deploys the `site/` directory to GitHub Pages.
+## Running the Full Simulation & Data-Fetch Pipelines
 
-The repository does not commit `site/data/consumersim_site_data.csv`. The
-website reads site data at runtime from `window.CONSUMERSIM_SITE_DATA_URL` or
-from `/api/site-data` when served by the local web bridge.
+Third-party raw datasets (University of Michigan Surveys of Consumers microdata, *New York Times* Archive articles, and *The Guardian* Open Platform articles) are subject to provider terms of use and are not redistributed directly. To re-run simulations from scratch:
 
-The browser checks the runtime site-data endpoint every 60 seconds and refreshes
-the rendered values when the CSV response changes. Set
-`window.CONSUMERSIM_SITE_DATA_REFRESH_MS` in `site/site-config.js` to override
-that interval, or set it to `0` to disable polling.
+1. Copy `.env.example` to `.env` and populate `OPENAI_API_KEY` (plus `OPENAI_BASE_URL` if using an OpenAI-compatible gateway), `FRED_API_KEY`, `NYT_API_KEY`, and `GUARDIAN_API_KEY`.
+2. Download official Michigan microdata from https://data.sca.isr.umich.edu into `CONSUMERSIM_DATA_DIR`.
+3. Fetch EU27 and Japan official targets, macro indicators, and news:
+   ```bash
+   python experiments/eu_jp/fetch_eu_jp_data.py
+   python experiments/eu_jp/fetch_eu_jp_supplement.py
+   python experiments/eu_jp/fetch_guardian_2014_2019.py
+   python experiments/eu_jp/run_eu_jp.py
+   ```
+4. Run U.S. strong baselines, robustness, mechanism tests, and memory audit:
+   ```bash
+   python experiments/us_baselines/run_strong_baselines.py
+   python experiments/robustness/run_robustness.py
+   python experiments/mechanisms/run_mechanisms.py
+   python experiments/mechanisms/rerun_5c_ortho.py
+   python experiments/memory_audit/run_date_probe.py
+   python experiments/memory_audit/analyze_date_probe.py
+   ```
 
-Repository setup:
+---
 
-- Set Pages source to `GitHub Actions`.
-- Add `CONSUMERSIM_SITE_DATA_URL` as a repository variable when deploying to
-  GitHub Pages.
+## Forecast Website, Live Monthly Sync & MCP Interface
 
-Do not put source data API keys or model API keys in GitHub. Those belong only
-on the private backend server.
-
-## Backend Settings
-
-Required:
-
-- `CONSUMERSIM_API_BASE_URL`
-
-Usually required:
-
-- `CONSUMERSIM_API_KEY`
-
-Optional:
-
-- `CONSUMERSIM_FORECAST_PATH`, default `/forecast`
-- `CONSUMERSIM_TIMES_PATH`, default `/forecast/times`
-- `CONSUMERSIM_SITE_DATA_PATH`, default `/site-data`
-- `CONSUMERSIM_API_KEY_HEADER`, default `Authorization`
-- `CONSUMERSIM_API_KEY_SCHEME`, default `Bearer`
-- `CONSUMERSIM_TIMEOUT_SECONDS`, default `30`
-
-## Backend Contract
-
-The proxy calls these backend routes:
-
-- `POST {CONSUMERSIM_API_BASE_URL}/forecast`
-- `GET {CONSUMERSIM_API_BASE_URL}/forecast/times`
-- `GET {CONSUMERSIM_API_BASE_URL}/site-data`
-
-Expected `POST /forecast` request:
-
-```json
-{
-  "region": "EU27",
-  "month": "2026-06",
-  "week": 4
-}
-```
-
-Expected `GET /site-data` response:
-
-```text
-as_of,record_type,region,...
-2026-07-04,monthly_prediction,us,...
-```
-
-## Repository Boundary
-
-This public repository should contain only:
-
-- MCP proxy code
-- public website assets
-- GitHub Pages deployment workflow
-- tests for the public interface
-- examples and documentation for users
-
-Do not commit:
-
-- generated site CSV files
-- private forecasting pipeline code
-- model prompts or internal simulation logic
-- private data refresh scripts
-- source API keys
-- LLM API keys
-- private datasets
-
-The private backend can update forecasts without exposing the internal
-ConsumerSim implementation.
+- **Static dashboard (`site/`)**: Preserves the original ConsumerSim forecast site layout while storing both the legacy (`?as_of=2026-07-02`) and updated v4 (`2026-09-30`, 147-month zero-$\lambda$ US/EU27/Japan) snapshots in `site/data/consumersim_site_data.csv`. Rebuild locally via `python scripts/build_site_data_v4.py`.
+- **Live monthly sync**: See `live_pipeline/README.md` for running monthly inference on an external server (`sociox`) and pushing validated CSV updates to the `live-data` branch for automatic GitHub Pages redeployment.
+- **MCP interface (`consumersim_mcp_proxy/`)**: Install with `pip install -e .` and run `consumersim-mcp` or `consumersim-web`.

@@ -341,6 +341,11 @@ h2 {
   border-top: 3px solid #101010;
 }
 
+.monthly-forecast-line {
+  border-color: #d64f2a;
+  border-top-style: solid;
+}
+
 .forecast-line {
   border-color: #d64f2a;
   border-top-style: dashed;

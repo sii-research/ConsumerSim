@@ -1,0 +1,569 @@
+{
+  "us": {
+    "202610": {
+      "month": 202610,
+      "as_of": "2026-10-15",
+      "prev_official": 48.1,
+      "forecast": 48.4157,
+      "official": 48.0,
+      "error": 0.4157,
+      "n_households": 600,
+      "macro": {
+        "spx": 7744.1,
+        "spx_ret": 2.09,
+        "gas": 4.33,
+        "cpi_yoy": 3.72,
+        "unrate": 4.2,
+        "mort": 7.4
+      }
+    },
+    "202611": {
+      "month": 202611,
+      "as_of": "2026-11-15",
+      "prev_official": 48.0,
+      "forecast": 51.501,
+      "official": 51.5,
+      "error": 0.001,
+      "n_households": 600,
+      "macro": {
+        "spx": 7561.7,
+        "spx_ret": -1.28,
+        "gas": 4.0,
+        "cpi_yoy": 4.08,
+        "unrate": 4.1,
+        "mort": 7.11
+      }
+    }
+  },
+  "eu": {
+    "202610": {
+      "month": 202610,
+      "as_of": "2026-10-15",
+      "prev_official": -16.1,
+      "forecast": -16.1542,
+      "official": -17.3,
+      "error": 1.1458,
+      "n_households": 600,
+      "macro": {
+        "eq_ch": -1.09,
+        "infl": 3.76,
+        "unemp": 6.2,
+        "brent": 126.3,
+        "rate": 2.5,
+        "fx": 1.12
+      }
+    },
+    "202611": {
+      "month": 202611,
+      "as_of": "2026-11-15",
+      "prev_official": -17.3,
+      "forecast": -17.065,
+      "official": null,
+      "error": null,
+      "n_households": 600,
+      "macro": {
+        "eq_ch": 2.94,
+        "infl": 4.01,
+        "unemp": 6.2,
+        "brent": 95.2,
+        "rate": 2.5,
+        "fx": 1.103
+      }
+    }
+  },
+  "jp": {
+    "202610": {
+      "month": 202610,
+      "as_of": "2026-10-15",
+      "prev_official": 35.4,
+      "forecast": 35.3809,
+      "official": 35.0,
+      "error": 0.3809,
+      "n_households": 600,
+      "macro": {
+        "eq_ch": 1.48,
+        "unemp": 2.4,
+        "brent": 126.3,
+        "rate": 1.04,
+        "fx": 158.2
+      }
+    },
+    "202611": {
+      "month": 202611,
+      "as_of": "2026-11-15",
+      "prev_official": 35.0,
+      "forecast": 35.0,
+      "official": null,
+      "error": null,
+      "n_households": 600,
+      "macro": {
+        "eq_ch": -6.4,
+        "unemp": 2.4,
+        "brent": 95.2,
+        "rate": 1.23,
+        "fx": 159.9
+      }
+    }
+  },
+  "headlines": {
+    "us": {
+      "202610": [
+        {
+          "title": "Anti-Israel Protesters Pose a Purity Test That Even Mamdani Can’t Pass",
+          "trail": "The enmity directed toward Mayor Zohran Mamdani from within the pro-Palestinian movement illustrates the challenge the wider left faces in corralling its insurgents.",
+          "source": "New York Times",
+          "url": "https://www.nytimes.com/2026/10/15/nyregion/mamdani-dsa-protest-israel.html",
+          "date": "2026-10-15"
+        },
+        {
+          "title": "Defying Trump, Zelensky Says Ukraine Will Resume Russian Refinery Strikes",
+          "trail": "President Volodymyr Zelensky expressed overt frustration with the United States in an interview with The Financial Times. He had paused the strikes to comply with a demand from the United States.",
+          "source": "New York Times",
+          "url": "https://www.nytimes.com/2026/10/15/world/europe/ukraine-russia-oil-strikes-zelensky-us-intelligence.html",
+          "date": "2026-10-15"
+        },
+        {
+          "title": "The Israeli Private Eye at the Heart of a Climate Hacking Scandal",
+          "trail": "He’s been linked to someone called “The Hawk.” He named his company “This Isn’t a Dentist’s Office.” The feds say he hacked American environmentalists.",
+          "source": "New York Times",
+          "url": "https://www.nytimes.com/2026/10/14/climate/amit-forlit-climate-hacking-allegations.html",
+          "date": "2026-10-14"
+        },
+        {
+          "title": "How Top Trump Officials Stoked Fears of a Nuke That Could Fry the Power Grid",
+          "trail": "For more than a decade, conservative activists held that a single atomic bomb could, without killing Americans directly, lay waste to the country — a claim that built fervor for war with Iran.",
+          "source": "New York Times",
+          "url": "https://www.nytimes.com/2026/10/14/science/electromagnetic-pulse-nuke-trump-officials.html",
+          "date": "2026-10-14"
+        },
+        {
+          "title": "Kimberly Guilfoyle Resigns as Ambassador to Greece",
+          "trail": "Ms. Guilfoyle was asked to quit by the White House after a string of damaging reports, including that she had asked a Republican donor to pay off a credit card.",
+          "source": "New York Times",
+          "url": "https://www.nytimes.com/2026/10/13/us/politics/kimberly-guilfoyle-resign.html",
+          "date": "2026-10-13"
+        }
+      ],
+      "202611": [
+        {
+          "title": "Judge Declines to Halt D.H.S. Demands for States to Screen Ballots",
+          "trail": "Judge James E. Boasberg ruled that states had largely succeeded in rebuffing the Trump administration’s efforts to disqualify voters, and that Democratic plaintiffs hadn’t suffered direct impacts.",
+          "source": "New York Times",
+          "url": "https://www.nytimes.com/2026/11/02/us/politics/trump-elections-ballots-states-dhs.html",
+          "date": "2026-11-03"
+        },
+        {
+          "title": "U.S. Military Strikes Iran’s Qeshm Island in What U.S. Officials Call a Defensive Measure",
+          "trail": "The action was limited, the officials said, with no immediate plans to escalate. The strikes come on the eve of the midterm elections.",
+          "source": "New York Times",
+          "url": "https://www.nytimes.com/2026/11/02/us/politics/us-military-strikes-iran-qeshm-island.html",
+          "date": "2026-11-03"
+        },
+        {
+          "title": "The Parties Make Their Closing Arguments: ‘This Isn’t Just Red Versus Blue’",
+          "trail": "Republicans, worried about losing control of Congress, are sending dire warnings about the opposing party. Democrats are trying to keep their focus on affordability, corruption and President Trump.",
+          "source": "New York Times",
+          "url": "https://www.nytimes.com/2026/11/02/us/politics/midterm-elections.html",
+          "date": "2026-11-02"
+        },
+        {
+          "title": "Backlash to Immigration Crackdown Creates a Challenge for Republicans",
+          "trail": "President Trump promised to end the chaos at the southern border. But deadly ICE shootings and high-profile raids have shaken many voters.",
+          "source": "New York Times",
+          "url": "https://www.nytimes.com/2026/11/02/us/politics/trump-immigration-crackdown-backlash-republicans.html",
+          "date": "2026-11-02"
+        },
+        {
+          "title": "Threats, Gaffes and Men’s Posteriors: Trump’s Talk Gets Wilder",
+          "trail": "A Times review of the president’s public speeches finds that he is more profane, more absolutist, longer-winded and less coherent than he was in 2016.",
+          "source": "New York Times",
+          "url": "https://www.nytimes.com/2026/11/01/us/politics/trump-speeches-rallies-age.html",
+          "date": "2026-11-01"
+        }
+      ]
+    },
+    "eu": {
+      "202610": [
+        {
+          "title": "Macron says ‘welcome back’ to Burnham suggestion UK could rejoin EU",
+          "trail": "French president, speaking alongside Spanish counterpart Pedro Sánchez, says EU bid would be good news for UK and Europeans",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/2026/sep/30/macron-welcome-back-burnham-suggestion-uk-could-rejoin-eu",
+          "date": "2026-09-30"
+        },
+        {
+          "title": "French court jails six men for manslaughter over mass drowning in Channel",
+          "trail": "Seven others found guilty of lesser charges in connection to incident in 2021 when inflatable dinghy sank killing at least 27 people with four more still missing",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/2026/sep/30/french-court-jails-six-manslaughter-mass-drowning-channel",
+          "date": "2026-09-30"
+        },
+        {
+          "title": "National Rally’s Jordan Bardella rails at ‘war’ on party after antisemitism claims",
+          "trail": "President of Marine Le Pen’s far-right party faces calls to resign over comments he allegedly wrote as a teenager",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/2026/sep/29/jordan-bardella-national-rally-antisemitism-claims-france",
+          "date": "2026-09-29"
+        },
+        {
+          "title": "‘We will not be intimidated,’ says Estonian PM after attributing recent arson attack to Russia – as it happened",
+          "trail": "Kristen Michal says attack ‘against Milrem Robotics was ordered by Russian special services’, after Kremlin denies involvement",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/live/2026/sep/29/ukraine-russia-war-odesa-overnight-lithuania-mark-rutte-europe-latest-news-updates",
+          "date": "2026-09-29"
+        },
+        {
+          "title": "Marine Le Pen hails RN senate surge as ‘milestone’ towards French presidency",
+          "trail": "National Rally and allies gain record 14 seats and can form senate group for first time after indirect vote by local officials",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/2026/sep/28/french-election-2026-far-right-senate-elections",
+          "date": "2026-09-28"
+        }
+      ],
+      "202611": [
+        {
+          "title": "Protests under way in Germany and France as minister warns against use of Halloween masks – as it happened",
+          "trail": "France’s interior minister, Laurent Nuñez, has warned protesters that covering their faces with Halloween costumes could result in fines",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/live/2026/oct/31/france-germany-protests-paris-europe-latest-news-updates",
+          "date": "2026-10-31"
+        },
+        {
+          "title": "Cost of living protests  to spread to Germany and reignite in France on Halloween",
+          "trail": "Activists call for people to make their anger known over poor public services including education and housing",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/2026/oct/30/cost-of-living-protests-to-spread-to-germany-and-reignite-in-france-on-halloween",
+          "date": "2026-10-31"
+        },
+        {
+          "title": "Canada and EU announce new alliance open to like-minded countries",
+          "trail": "Alliance for the Future, unveiled at Montreal summit and open to other countries, conceived for world ‘shaken by new storms’",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/2026/oct/30/canada-european-union-alliance",
+          "date": "2026-10-30"
+        },
+        {
+          "title": "Evacuation of civilians begins in besieged Ukrainian city of Oleshky",
+          "trail": "Humanitarian convoy brings food and medicine to Russian-held city where people have suffered severe shortages",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/2026/oct/30/evacuation-besieged-ukrainian-city-oleshky",
+          "date": "2026-10-30"
+        },
+        {
+          "title": "Shell profits double to $10.8bn as Iran war pushes up margin on oil",
+          "trail": "Energy firm to return $5bn to shareholders as climate campaigners criticise high profits",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/business/2026/oct/29/shell-profits-double-iran-war-pushes-up-profit-margin-on-oil",
+          "date": "2026-10-29"
+        }
+      ]
+    },
+    "jp": {
+      "202610": [
+        {
+          "title": "Tech market sell-off deepens amid fears over US inflation and AI debt",
+          "trail": "Chip makers and tech investors such as Samsung and SoftBank plunge as potential interest rate hikes spook markets",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/business/2026/oct/15/tech-market-sell-off-deepens-amid-fears-over-us-inflation-and-ai-debt",
+          "date": "2026-10-15"
+        },
+        {
+          "title": "A dominatrix and her tightly bound client: Giada Ripa’s best photograph",
+          "trail": "‘Karen is a Japanese dominatrix and “rope artist” who ties up her clients in a way that echoes how samurai bound their prisoners. Clients are mostly men with high-pressure jobs’",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/artanddesign/2026/oct/14/japanese-dominatrix-tightly-bound-client-samurai-giada-ripa-best-photograph",
+          "date": "2026-10-14"
+        },
+        {
+          "title": "Russia arrests Japanese journalist on allegations of spying",
+          "trail": "FSB security agency said reporter was arrested on island of Sakhalin, alleging he was collecting information about Russia’s defences",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/2026/oct/14/russia-detains-japanese-journalist-suspicion-spying",
+          "date": "2026-10-14"
+        },
+        {
+          "title": "Mag Mag review – giant female ghost loves people to death in Japanese comedy-horror",
+          "trail": "Sara Minami gives a wonderfully crazed performance in a twisted, fresh take on the genre as Yuriyan Retriever’s debut feature examines infatuation, bullying and beauty norms",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/film/2026/oct/13/mag-mag-review-japanese-horror-yuriyan-retriever",
+          "date": "2026-10-13"
+        },
+        {
+          "title": "Meet Japan’s mythical beast who appears in bolts of lightning",
+          "trail": "Raijū is normally docile but gets agitated in storms and leaps up to run among the clouds, according to folklore",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/news/2026/oct/09/weatherwatch-raiju-japan-mythical-beast-ligtning-bolts",
+          "date": "2026-10-09"
+        }
+      ],
+      "202611": [
+        {
+          "title": "Nissan reduces petrol car production as EV sales boom in China",
+          "trail": "Manufacturer says ‘shift to new energy vehicles is happening faster than expected’ and market is harsh",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/business/2026/nov/11/nissan-reduces-petrol-car-production-as-ev-sales-boom-in-china",
+          "date": "2026-11-11"
+        },
+        {
+          "title": "13 Assassins: Takashi Miike’s viscerally violent remake is full-throttle samurai mayhem",
+          "trail": "The Japanese film-maker doesn’t hold back in his rendition of the 1963 film, with an epic battle that remains one of the most impressive action scenes in history",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/film/2026/nov/11/japan-takashi-miikes-13-assasins-samurai-remake-review",
+          "date": "2026-11-10"
+        },
+        {
+          "title": "Deadly floods hit Iraq as thunderstorms sweep across region",
+          "trail": "Violent storms lash northern Iraq and parts of Iran, while Portugal faces strong winds and Japan braces for further snowfall",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/environment/2026/nov/09/deadly-floods-iraq-thunderstorms-iran-portugal-japan-snow",
+          "date": "2026-11-09"
+        },
+        {
+          "title": "Godzilla Minus Zero takes US box office by storm in opening weekend",
+          "trail": "The foreign-language film topped the North American box office with $31.6m in takings, generating $63m worldwide",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/world/2026/nov/09/godzilla-minus-zero-takes-us-box-office-by-storm-in-opening-weekend",
+          "date": "2026-11-09"
+        },
+        {
+          "title": "Ghost Town review – the phantoms and lost souls haunting a Japanese city after the 2011 earthquake",
+          "trail": "Katharine Round’s documentary puts cameras in taxis where drivers and fares reflect on the disaster’s impact and talk of crowds of spectres and disappearing passengers",
+          "source": "The Guardian",
+          "url": "https://www.theguardian.com/film/2026/nov/03/ghost-town-review-the-phantoms-and-lost-souls-haunting-a-japanese-city-after-the-2011-earthquake",
+          "date": "2026-11-03"
+        }
+      ]
+    }
+  },
+  "weekly": {
+    "us": {
+      "Nov W1": {
+        "month": 202611,
+        "week_label": "Nov W1",
+        "cutoff_day": 7,
+        "as_of": "2026-11-07",
+        "forecast": 47.0718,
+        "delta": -0.9282,
+        "n": 200
+      },
+      "Nov W2": {
+        "month": 202611,
+        "week_label": "Nov W2",
+        "cutoff_day": 14,
+        "as_of": "2026-11-14",
+        "forecast": 48.4294,
+        "delta": 0.4294,
+        "n": 200
+      },
+      "Nov W3": {
+        "month": 202611,
+        "week_label": "Nov W3",
+        "cutoff_day": 21,
+        "as_of": "2026-11-21",
+        "forecast": 45.5733,
+        "delta": -2.4267,
+        "n": 200
+      },
+      "Nov W4": {
+        "month": 202611,
+        "week_label": "Nov W4",
+        "cutoff_day": 25,
+        "as_of": "2026-11-25",
+        "forecast": 48.0727,
+        "delta": 0.0727,
+        "n": 200
+      }
+    },
+    "eu": {
+      "Nov W1": {
+        "month": 202611,
+        "week_label": "Nov W1",
+        "cutoff_day": 7,
+        "as_of": "2026-11-07",
+        "forecast": -16.9062,
+        "delta": 0.3938,
+        "n": 200
+      },
+      "Nov W2": {
+        "month": 202611,
+        "week_label": "Nov W2",
+        "cutoff_day": 14,
+        "as_of": "2026-11-14",
+        "forecast": -17.0306,
+        "delta": 0.2694,
+        "n": 200
+      },
+      "Nov W3": {
+        "month": 202611,
+        "week_label": "Nov W3",
+        "cutoff_day": 21,
+        "as_of": "2026-11-21",
+        "forecast": -17.1756,
+        "delta": 0.1244,
+        "n": 200
+      },
+      "Nov W4": {
+        "month": 202611,
+        "week_label": "Nov W4",
+        "cutoff_day": 25,
+        "as_of": "2026-11-25",
+        "forecast": -17.0288,
+        "delta": 0.2712,
+        "n": 200
+      }
+    },
+    "jp": {
+      "Nov W1": {
+        "month": 202611,
+        "week_label": "Nov W1",
+        "cutoff_day": 7,
+        "as_of": "2026-11-07",
+        "forecast": 35.1777,
+        "delta": 0.1777,
+        "n": 200
+      },
+      "Nov W2": {
+        "month": 202611,
+        "week_label": "Nov W2",
+        "cutoff_day": 14,
+        "as_of": "2026-11-14",
+        "forecast": 35.0195,
+        "delta": 0.0195,
+        "n": 200
+      },
+      "Nov W3": {
+        "month": 202611,
+        "week_label": "Nov W3",
+        "cutoff_day": 21,
+        "as_of": "2026-11-21",
+        "forecast": 34.9672,
+        "delta": -0.0328,
+        "n": 200
+      },
+      "Nov W4": {
+        "month": 202611,
+        "week_label": "Nov W4",
+        "cutoff_day": 25,
+        "as_of": "2026-11-25",
+        "forecast": 35.0692,
+        "delta": 0.0692,
+        "n": 200
+      }
+    }
+  },
+  "weekly_headlines": {
+    "us": [
+      {
+        "title": "Trump reportedly says he is open to pardoning Jensen Huang ahead of CEO’s planned Senate committee testimony – as it happened",
+        "trail": "This live blog is now closed.",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/us-news/live/2026/nov/24/donald-trump-nvidia-jensen-huang-republicans-democrats-china-latest-news-updates",
+        "date": "2026-11-25"
+      },
+      {
+        "title": "One lame duck and two turkeys as Trump plays the hits at Thanksgiving ceremony",
+        "trail": "Levity was in short supply as president, reeling from midterms rout, talked up his achievements – and fixated on White House vanity project",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/us-news/2026/nov/24/donald-trump-turkey-pardon",
+        "date": "2026-11-25"
+      },
+      {
+        "title": "Compass’s logic for US listing is flimsy but UK ministers need to wake up to Footsie flight risk",
+        "trail": "The contract caterer switching to New York is a big hit to the London Stock Exchange but what is being done to discourage others from delisting?",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/business/nils-pratley-on-finance/2026/nov/24/compass-logic-new-york-listing-flimsy",
+        "date": "2026-11-24"
+      },
+      {
+        "title": "NHS caterer Compass confirms plan to ditch main London listing for New York",
+        "trail": "World’s largest catering group supplies big tech firms such as Microsoft, Google and Amazon in the US",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/business/2026/nov/24/nhs-caterer-compass-london-listing-new-york-us-ftse-100",
+        "date": "2026-11-24"
+      },
+      {
+        "title": "Nvidia’s value jumped by $950bn as shares close at $165.05 after surprise return of CEO Jensen Huang – as it happened",
+        "trail": "New value still half a trillion dollars lower than before affair was revealed; Trump hails Huang as a ‘great patriot and national treasure’",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/business/live/2026/nov/23/tech-sell-off-ai-stock-market-support-measures-deployed-south-korea-taiwan-china-ftse-nasdaq-latest-news-updates",
+        "date": "2026-11-23"
+      }
+    ],
+    "eu": [
+      {
+        "title": "Irish plan offers Burnham breakthrough on Made in Europe",
+        "trail": "Irish presidency of EU proposes giving UK ‘partner’ status on assembly of cars in possible boost to reset of relations",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/business/2026/nov/24/uk-eu-made-in-europe-trade-cars-tariffs",
+        "date": "2026-11-24"
+      },
+      {
+        "title": "EU to impose cap on Chinese hybrid EV imports next month",
+        "trail": "Temporary quotas on vehicles entering the bloc will also apply to cars from the UK, Japan and Turkey",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/business/2026/nov/24/eu-cap-chinese-hybrid-ev-imports-tariff-uk",
+        "date": "2026-11-24"
+      },
+      {
+        "title": "Gas prices in Europe surge as forecast cold snap feeds supply shortage fears",
+        "trail": "Jump in price follows slowdown in Qatar supplies and depleted summer stocks due to heatwaves",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/business/2026/nov/23/gas-prices-in-europe-surge-as-forecast-cold-snap-feeds-supply-shortage-fears",
+        "date": "2026-11-23"
+      },
+      {
+        "title": "Sweden’s datacentre politics are more complicated than they appear",
+        "trail": "Letters: There are distinct tensions over who controls, benefits from and gains access to natural and public resources, write James White and Nora Söderberg",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/world/2026/nov/23/swedens-datacentre-politics-are-more-complicated-than-they-appear",
+        "date": "2026-11-23"
+      },
+      {
+        "title": "Court bans China’s BYD from selling ‘Defender clone’ SUV in EU",
+        "trail": "District court in the Hague finds Chinese carmaker infringed on intellectual property of Jaguar Land Rover",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/business/2026/nov/22/court-bans-china-byd-selling-defender-clone-suv-in-eu",
+        "date": "2026-11-22"
+      }
+    ],
+    "jp": [
+      {
+        "title": "EU to impose cap on Chinese hybrid EV imports next month",
+        "trail": "Temporary quotas on vehicles entering the bloc will also apply to cars from the UK, Japan and Turkey",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/business/2026/nov/24/eu-cap-chinese-hybrid-ev-imports-tariff-uk",
+        "date": "2026-11-24"
+      },
+      {
+        "title": "Nasdaq erases all 2026 gains as AI sell-off dampens Anthropic’s second day of trading",
+        "trail": "The Nasdaq lost trillions in value, with the AI startup’s IPO failing to buoy it as investors question huge sums being poured into AI buildout",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/business/2026/nov/20/global-stock-markets-slump-anthropic-ipo-ai-sell-off",
+        "date": "2026-11-20"
+      },
+      {
+        "title": "China gives Japan PM frosty welcome at Apec amid fanfare for other leaders",
+        "trail": "Sanae Takaichi cuts lonely figure at airport, a move by China that is being linked to the simmering row over Taiwan",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/world/2026/nov/19/china-gives-japan-pm-frosty-welcome-apec",
+        "date": "2026-11-19"
+      },
+      {
+        "title": "A potato war has been simmering for decades between the US and Japan. It’s about to reach boiling point",
+        "trail": "Under pressure from Donald Trump, Japan’s government could be about to lift a ban on imported American potatoes, which farmers say would threaten their livelihoods",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/world/2026/nov/18/potato-war-japan-76-year-ban-american-imported-potatoes",
+        "date": "2026-11-18"
+      },
+      {
+        "title": "US senators urge White House AI chief to fix vulnerabilities after mass outages",
+        "trail": "As Democrats flag AI bank breaches and cyber-attacks in Japan, Jay Clayton says system failures happen",
+        "source": "The Guardian",
+        "url": "https://www.theguardian.com/us-news/2026/nov/18/jay-clayton-ai-tech-outages-infrastructure",
+        "date": "2026-11-18"
+      }
+    ]
+  },
+  "updated_at": "2026-11-25",
+  "latest_month": 202611
+}

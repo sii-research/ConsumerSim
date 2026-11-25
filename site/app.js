@@ -350,6 +350,7 @@ function renderMapValues() {
 }
 
 function renderHeroForecasts() {
+  const timeline = sharedHeroTimeline();
   data.regions.forEach((region) => {
     const monthly = data.monthlyPredictions.find((item) => item.id === region.id);
     const weekly = latestWeeklyForecast(region.id);
@@ -362,7 +363,7 @@ function renderHeroForecasts() {
       noteNode.textContent = "";
       noteNode.hidden = true;
     }
-    drawHeroForecastChart(region);
+    drawHeroForecastChart(region, timeline);
   });
 }
 
@@ -380,28 +381,59 @@ function latestWeeklyRows(regionId) {
   return latestPeriod ? rows.filter((point) => point.period === latestPeriod) : rows;
 }
 
-function heroForecastPoints(region) {
-  const actualMonthly = region.series
-    .filter((point) => Number.isFinite(point.actual))
-    .slice(-2)
-    .map((point) => ({
-      label: point.period,
-      date: monthDate(point.period),
-      forecast: null,
-      actual: point.actual,
-      forecastOnly: false
-    }));
-  const weeklyForecast = latestWeeklyRows(region.id)
-    .map((point) => ({
-      label: point.label,
-      date: weeklyDate(point),
-      forecast: point.forecast,
-      actual: null,
-      forecastOnly: true
-    }));
-  return [...actualMonthly, ...weeklyForecast].filter(
-    (point) => Number.isFinite(point.forecast) || Number.isFinite(point.actual)
+function sharedHeroTimeline() {
+  const actualPeriodSets = data.regions.map(
+    (region) => new Set(region.series.filter((p) => Number.isFinite(p.actual)).map((p) => p.period))
   );
+  const firstSeries = data.regions[0]?.series || [];
+  const commonMonthly = firstSeries
+    .map((p) => p.period)
+    .filter((period) => actualPeriodSets.every((set) => set.has(period)));
+  const monthlyPeriods = commonMonthly.slice(-10);
+  const lastMonthlyDate = monthlyPeriods.length ? monthDate(monthlyPeriods.at(-1)) : null;
+
+  const weeklyRowsAfter = (regionId) =>
+    latestWeeklyRows(regionId).filter((p) => {
+      const d = weeklyDate(p);
+      return d && (!lastMonthlyDate || d.valueOf() > lastMonthlyDate.valueOf());
+    });
+
+  const weeklyMaps = data.regions.map((r) => new Map(weeklyRowsAfter(r.id).map((p) => [p.label, p])));
+  let weeklyLabels = weeklyRowsAfter(data.regions[0]?.id || "")
+    .map((p) => p.label)
+    .filter((label) => weeklyMaps.every((map) => map.has(label)));
+
+  if (!weeklyLabels.length) {
+    const allMaps = data.regions.map((r) => new Map(latestWeeklyRows(r.id).map((p) => [p.label, p])));
+    weeklyLabels = latestWeeklyRows(data.regions[0]?.id || "")
+      .map((p) => p.label)
+      .filter((label) => allMaps.every((map) => map.has(label)))
+      .slice(-4);
+  }
+  return { monthlyPeriods, weeklyLabels };
+}
+
+function heroForecastSeries(region, timeline) {
+  const seriesByPeriod = new Map(region.series.map((p) => [p.period, p]));
+  const weeklyByLabel = new Map(latestWeeklyRows(region.id).map((p) => [p.label, p]));
+
+  const monthly = timeline.monthlyPeriods
+    .map((period) => {
+      const p = seriesByPeriod.get(period);
+      if (!p) return null;
+      return { label: period, actual: p.actual, forecast: p.forecast };
+    })
+    .filter(Boolean);
+
+  const weekly = timeline.weeklyLabels
+    .map((label) => {
+      const p = weeklyByLabel.get(label);
+      if (!p) return null;
+      return { label, forecast: p.forecast };
+    })
+    .filter(Boolean);
+
+  return { monthly, weekly };
 }
 
 function monthDate(label) {
@@ -425,10 +457,10 @@ function weeklyDate(point) {
   return new Date(year, weekMonth, point.cutoffDay);
 }
 
-function drawHeroForecastChart(region) {
+function drawHeroForecastChart(region, timeline = sharedHeroTimeline()) {
   const canvas = document.querySelector(`[data-hero-chart="${region.id}"]`);
   if (!canvas) return;
-  const points = heroForecastPoints(region);
+  const { monthly, weekly } = heroForecastSeries(region, timeline);
   const rect = canvas.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
   const width = Math.max(280, Math.floor(rect.width));
@@ -439,28 +471,42 @@ function drawHeroForecastChart(region) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, width, height);
 
-  if (points.length < 2) return;
+  if (monthly.length + weekly.length < 2) return;
 
-  const values = points.flatMap((point) => [point.forecast, point.actual]).filter((value) => Number.isFinite(value));
+  const values = [
+    ...monthly.flatMap((p) => [p.actual, p.forecast]),
+    ...weekly.map((p) => p.forecast)
+  ].filter((value) => Number.isFinite(value));
   const min = Math.min(...values);
   const max = Math.max(...values);
   const spread = max - min || 1;
   const yMin = min - spread * 0.18;
   const yMax = max + spread * 0.18;
-  const pad = { top: 14, right: 14, bottom: 32, left: 44 };
+  const pad = { top: 14, right: 16, bottom: 32, left: 44 };
   const plotW = width - pad.left - pad.right;
   const plotH = height - pad.top - pad.bottom;
-  const datedPoints = points
-    .map((point) => ({
-      ...point,
-      time: point.date instanceof Date && !Number.isNaN(point.date.valueOf()) ? point.date.valueOf() : null
-    }))
-    .filter((point) => Number.isFinite(point.time));
-  const minTime = Math.min(...datedPoints.map((point) => point.time));
-  const maxTime = Math.max(...datedPoints.map((point) => point.time));
-  const timeSpread = maxTime - minTime || 1;
-  const xForTime = (time) => pad.left + ((time - minTime) / timeSpread) * plotW;
+
+  // Unified aligned dual-zone X geometry: identical across US, EU27, and Japan
+  const hasWeekly = weekly.length > 0;
+  const histEndFrac = hasWeekly ? 0.62 : 1.0;
+  const dividerFrac = 0.665;
+  const weekStartFrac = 0.715;
+  const xForMonthly = (i) =>
+    pad.left + (monthly.length <= 1 ? 0 : (i / (monthly.length - 1)) * (plotW * histEndFrac));
+  const xForWeekly = (j) =>
+    pad.left +
+    plotW * weekStartFrac +
+    (weekly.length <= 1 ? (plotW * (1 - weekStartFrac)) / 2 : (j / (weekly.length - 1)) * (plotW * (1 - weekStartFrac)));
   const yFor = (value) => pad.top + ((yMax - value) / (yMax - yMin)) * plotH;
+
+  // Subtle tinted backdrop for the aligned live weekly forecast zone
+  if (hasWeekly) {
+    const divX = pad.left + plotW * dividerFrac;
+    ctx.save();
+    ctx.fillStyle = "rgba(214, 79, 42, 0.045)";
+    ctx.fillRect(divX, pad.top, width - pad.right - divX, plotH);
+    ctx.restore();
+  }
 
   ctx.font = "11px Consolas, monospace";
   ctx.lineWidth = 1;
@@ -468,6 +514,7 @@ function drawHeroForecastChart(region) {
   ctx.fillStyle = "#6b6860";
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
+  const yDigits = yMax - yMin < 4 || region.id === "eu" ? 1 : 0;
   for (let i = 0; i < 3; i += 1) {
     const t = i / 2;
     const y = pad.top + t * plotH;
@@ -476,41 +523,61 @@ function drawHeroForecastChart(region) {
     ctx.moveTo(pad.left, y);
     ctx.lineTo(width - pad.right, y);
     ctx.stroke();
-    ctx.fillText(value.toFixed(region.id === "eu" ? 1 : 0), pad.left - 8, y);
+    ctx.fillText(value.toFixed(yDigits), pad.left - 8, y);
   }
 
-  const firstForecast = datedPoints.find((point) => point.forecastOnly);
-  if (firstForecast) {
-    const x = xForTime(firstForecast.time);
+  if (hasWeekly) {
+    const divX = pad.left + plotW * dividerFrac;
     ctx.save();
     ctx.setLineDash([4, 5]);
     ctx.strokeStyle = "rgba(16, 16, 16, 0.24)";
     ctx.beginPath();
-    ctx.moveTo(x, pad.top);
-    ctx.lineTo(x, pad.top + plotH);
+    ctx.moveTo(divX, pad.top);
+    ctx.lineTo(divX, pad.top + plotH);
     ctx.stroke();
     ctx.restore();
   }
 
-  const actualPoints = datedPoints
-    .map((point) => (Number.isFinite(point.actual) ? [xForTime(point.time), yFor(point.actual)] : null))
+  const actualPoints = monthly
+    .map((p, i) => (Number.isFinite(p.actual) ? [xForMonthly(i), yFor(p.actual)] : null))
     .filter(Boolean);
-  const forecastPoints = datedPoints
-    .map((point) => (Number.isFinite(point.forecast) ? [xForTime(point.time), yFor(point.forecast)] : null))
+  const monthlyForecastPoints = monthly
+    .map((p, i) => (Number.isFinite(p.forecast) ? [xForMonthly(i), yFor(p.forecast)] : null))
+    .filter(Boolean);
+  const weeklyForecastPoints = weekly
+    .map((p, j) => (Number.isFinite(p.forecast) ? [xForWeekly(j), yFor(p.forecast)] : null))
     .filter(Boolean);
 
-  drawLine(ctx, actualPoints, "#101010", 2.3);
-  drawDashedLine(ctx, forecastPoints, "#d64f2a", 2.5);
-  drawPoints(ctx, actualPoints, "#101010");
-  drawPoints(ctx, forecastPoints, "#d64f2a");
+  drawLine(ctx, actualPoints, "#101010", 2.0);
+  drawLine(ctx, monthlyForecastPoints, "#d64f2a", 1.9);
+  drawDashedLine(ctx, weeklyForecastPoints, "#d64f2a", 2.2);
+  drawPoints(ctx, actualPoints, "#101010", 2.5);
+  drawPoints(ctx, monthlyForecastPoints, "#d64f2a", 2.4);
+  drawPoints(ctx, weeklyForecastPoints, "#d64f2a", 3.0);
 
+  // Aligned X-axis tick labels (identical slots across all 3 cards)
   ctx.fillStyle = "#6b6860";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  const actualLabels = datedPoints.filter((point) => !point.forecastOnly);
-  const labelPoints = [actualLabels[0], actualLabels.at(-1), datedPoints.at(-1)].filter(Boolean);
-  new Map(labelPoints.map((point) => [point.label, point])).forEach((point) => {
-    ctx.fillText(point.label, xForTime(point.time), pad.top + plotH + 10);
+  const ticks = [];
+  if (monthly.length) {
+    ticks.push({ label: monthly[0].label, x: xForMonthly(0) });
+    if (monthly.length >= 5) {
+      const midIdx = Math.floor((monthly.length - 1) / 2);
+      ticks.push({ label: monthly[midIdx].label, x: xForMonthly(midIdx) });
+    }
+    ticks.push({ label: monthly.at(-1).label, x: xForMonthly(monthly.length - 1) });
+  }
+  if (weekly.length) {
+    ticks.push({ label: weekly.at(-1).label, x: xForWeekly(weekly.length - 1) });
+  }
+  let lastLabelX = -Infinity;
+  ticks.forEach((tick) => {
+    const lx = Math.max(pad.left + 18, Math.min(width - pad.right - 18, tick.x));
+    if (Math.abs(lx - lastLabelX) >= 48) {
+      ctx.fillText(tick.label, lx, pad.top + plotH + 10);
+      lastLabelX = lx;
+    }
   });
 }
 
@@ -626,9 +693,16 @@ function setupReveal() {
         }
       });
     },
-    { threshold: 0.12 }
+    { threshold: 0.05 }
   );
-  targets.forEach((target) => observer.observe(target));
+  targets.forEach((target) => {
+    const rect = target.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 1.05) {
+      target.classList.add("is-visible");
+    } else {
+      observer.observe(target);
+    }
+  });
 }
 
 function createTabs() {
@@ -772,13 +846,15 @@ function renderWeeklyExplorer(region) {
     return;
   }
 
-  els.weeklyTitle.textContent = `${region.label} weekly consumer sentiment path`;
-  els.weeklyContext.textContent = `${region.label}, May 2026 weeks 2-4 and June 2026 week 1. Weekly nowcast slots.`;
-  renderForecastNews(region, "weekly", rows.at(-1)?.label);
+  const firstW = rows[0].label;
+  const lastW = rows.at(-1).label;
+  const targetP = rows.at(-1).period;
+  els.weeklyTitle.textContent = `${region.label} weekly consumer sentiment nowcast`;
+  els.weeklyContext.textContent = `${region.label}, ${firstW} to ${lastW} (target ${targetP}). Intra-month weekly nowcast slots.`;
+  renderForecastNews(region, "weekly", lastW);
   els.weeklyNote.textContent =
-    activeForecastRegion === "us"
-      ? "Illustrative weekly path based on the May ICS level: the late-May readings firm gradually, and the first June slot shows a modest continuation of that rebound."
-      : `${region.label} weekly path is shown from the same forecast format for visual review.`;
+    rows.at(-1)?.interpretation ||
+    `${region.label} weekly nowcast trajectory through ${lastW}.`;
   explorerChartState = {
     points: rows.map((row) => ({ label: row.label, value: row.forecast })),
     emptyMessage: ""
@@ -968,9 +1044,18 @@ function drawChart() {
   ctx.fillStyle = "#5f5f5f";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
+  const maxTicks = Math.max(4, Math.floor(plotW / 68));
+  const step = Math.max(1, Math.ceil(activeRegion.series.length / maxTicks));
+  let prevTickX = -Infinity;
   activeRegion.series.forEach((point, i) => {
-    if (i % 2 === 0 || i === activeRegion.series.length - 1) {
-      ctx.fillText(point.period.slice(2), xFor(i), padding.top + plotH + 16);
+    const isLast = i === activeRegion.series.length - 1;
+    if (i % step === 0 || isLast) {
+      const tx = xFor(i);
+      if (!isLast && tx - prevTickX < 46) return;
+      if (isLast && tx - prevTickX < 38) return;
+      const lbl = /^\d{4}-\d{2}$/.test(point.period) ? point.period.slice(2) : point.period;
+      ctx.fillText(lbl, tx, padding.top + plotH + 16);
+      prevTickX = tx;
     }
   });
 }
@@ -1093,7 +1178,7 @@ function drawExplorerChart() {
   const values = rows.map((row) => row.value);
   const min = Math.min(...values) - 1;
   const max = Math.max(...values) + 1;
-  const pad = { top: 22, right: 18, bottom: 42, left: 48 };
+  const pad = { top: 22, right: 30, bottom: 42, left: 48 };
   const plotW = width - pad.left - pad.right;
   const plotH = height - pad.top - pad.bottom;
   const xFor = (index) => pad.left + (index / (rows.length - 1)) * plotW;
@@ -1130,8 +1215,15 @@ function drawExplorerChart() {
   ctx.fillStyle = "#5f5f5f";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
+  let prevExpX = -Infinity;
   rows.forEach((row, index) => {
-    ctx.fillText(row.label, xFor(index), pad.top + plotH + 14);
+    const x = xFor(index);
+    const isLast = index === rows.length - 1;
+    if (index === 0 || isLast || x - prevExpX >= 56) {
+      if (isLast && x - prevExpX < 44) return;
+      ctx.fillText(row.label, x, pad.top + plotH + 14);
+      prevExpX = x;
+    }
   });
 }
 
@@ -1233,11 +1325,11 @@ function drawDashedLine(ctx, points, color, width) {
   ctx.restore();
 }
 
-function drawPoints(ctx, points, color) {
+function drawPoints(ctx, points, color, radius = 3.5) {
   ctx.fillStyle = color;
   points.forEach(([x, y]) => {
     ctx.beginPath();
-    ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
   });
 }
@@ -1301,6 +1393,9 @@ async function init() {
 }
 
 async function loadSiteDataCsv() {
+  if (typeof window.CONSUMERSIM_INLINE_CSV === "string" && window.CONSUMERSIM_INLINE_CSV.trim()) {
+    return window.CONSUMERSIM_INLINE_CSV;
+  }
   const configuredSource = window.CONSUMERSIM_SITE_DATA_URL;
   const sources = [configuredSource, "./data/consumersim_site_data.csv", "/api/site-data"].filter(Boolean);
   let lastError = null;

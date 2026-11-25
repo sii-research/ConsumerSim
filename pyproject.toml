@@ -3,24 +3,29 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "consumersim-mcp-proxy"
-version = "0.1.0"
-description = "Thin ConsumerSim MCP proxy and public website shell"
+name = "consumersim"
+version = "4.0.0"
+description = "ConsumerSim: Salience-driven generative social simulation for cross-regional consumer confidence forecasting (US, EU27, Japan)"
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-  "fastapi>=0.111,<1.0",
   "httpx>=0.27,<1.0",
-  "mcp>=1.27,<2.0",
-  "uvicorn[standard]>=0.30,<1.0",
+  "mcp>=1.2,<2.0",
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "scipy>=1.11",
+  "scikit-learn>=1.3",
+  "statsmodels>=0.14",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0,<9.0"]
+dev = [
+  "pytest>=8.0,<9.0",
+]
 
 [project.scripts]
 consumersim-mcp = "consumersim_mcp_proxy.server:main"
 consumersim-web = "consumersim_mcp_proxy.web:main"
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["consumersim_mcp_proxy*"]
+include = ["consumersim*", "consumersim_mcp_proxy*", "scripts*"]

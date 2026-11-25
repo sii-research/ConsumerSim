@@ -3,7 +3,7 @@ name: Deploy Forecast Site
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "30 0 * * 1"
   push:
     branches: [main]
     paths:
@@ -21,15 +21,28 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  refresh-and-deploy:
+  validate-and-deploy:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Check out repository
+      - name: Check out repository (main)
         uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Overlay latest CSV from live-data branch if present
+        run: |
+          if git ls-remote --exit-code --heads origin live-data >/dev/null 2>&1; then
+            git fetch --depth 1 origin live-data
+            if git cat-file -e origin/live-data:site/data/consumersim_site_data.csv 2>/dev/null; then
+              mkdir -p site/data
+              git show origin/live-data:site/data/consumersim_site_data.csv > site/data/consumersim_site_data.csv
+              echo "Loaded latest site/data/consumersim_site_data.csv from origin/live-data"
+            fi
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -39,53 +52,11 @@ jobs:
       - name: Install package
         run: python -m pip install -e .[dev]
 
-      - name: Configure public site data endpoint
-        if: vars.CONSUMERSIM_SITE_DATA_URL != ''
-        env:
-          CONSUMERSIM_SITE_DATA_URL: ${{ vars.CONSUMERSIM_SITE_DATA_URL }}
+      - name: Validate and normalize site CSV
         run: |
-          python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          value = os.environ["CONSUMERSIM_SITE_DATA_URL"]
-          Path("site/site-config.js").write_text(
-              f"window.CONSUMERSIM_SITE_DATA_URL = {json.dumps(value)};\n",
-              encoding="utf-8",
-          )
-          PY
-
-      - name: Refresh Pages artifact site data
-        env:
-          CONSUMERSIM_SSH_PRIVATE_KEY: ${{ secrets.CONSUMERSIM_SSH_PRIVATE_KEY }}
-          CONSUMERSIM_SSH_HOST: ${{ vars.CONSUMERSIM_SSH_HOST || '8.216.41.50' }}
-          CONSUMERSIM_SSH_PORT: ${{ vars.CONSUMERSIM_SSH_PORT || '22' }}
-          CONSUMERSIM_SSH_USER: ${{ vars.CONSUMERSIM_SSH_USER || 'yixu' }}
-          CONSUMERSIM_SSH_SITE_DATA_PATH: ${{ vars.CONSUMERSIM_SSH_SITE_DATA_PATH || '/home/yixu/consumersim-api/data/consumersim_site_data.csv' }}
-          CONSUMERSIM_API_BASE_URL: ${{ secrets.CONSUMERSIM_API_BASE_URL || vars.CONSUMERSIM_API_BASE_URL }}
-          CONSUMERSIM_API_KEY: ${{ secrets.CONSUMERSIM_API_KEY }}
-          CONSUMERSIM_API_KEY_HEADER: ${{ vars.CONSUMERSIM_API_KEY_HEADER }}
-          CONSUMERSIM_API_KEY_SCHEME: ${{ vars.CONSUMERSIM_API_KEY_SCHEME }}
-          CONSUMERSIM_SITE_DATA_PATH: ${{ vars.CONSUMERSIM_SITE_DATA_PATH }}
-          CONSUMERSIM_TIMEOUT_SECONDS: ${{ vars.CONSUMERSIM_TIMEOUT_SECONDS }}
-        run: |
-          if [ -n "$CONSUMERSIM_SSH_PRIVATE_KEY" ]; then
-            mkdir -p ~/.ssh
-            chmod 700 ~/.ssh
-            printf '%s\n' "$CONSUMERSIM_SSH_PRIVATE_KEY" > ~/.ssh/consumersim_site_data_key
-            chmod 600 ~/.ssh/consumersim_site_data_key
-            ssh-keyscan -p "$CONSUMERSIM_SSH_PORT" "$CONSUMERSIM_SSH_HOST" >> ~/.ssh/known_hosts
-            scp -i ~/.ssh/consumersim_site_data_key \
-              -P "$CONSUMERSIM_SSH_PORT" \
-              "$CONSUMERSIM_SSH_USER@$CONSUMERSIM_SSH_HOST:$CONSUMERSIM_SSH_SITE_DATA_PATH" \
-              /tmp/consumersim_site_data.csv
-            python scripts/refresh_site_data.py \
-              --input /tmp/consumersim_site_data.csv \
-              --output site/data/consumersim_site_data.csv
-          else
-            python scripts/refresh_site_data.py --output site/data/consumersim_site_data.csv
-          fi
+          python scripts/refresh_site_data.py \
+            --input site/data/consumersim_site_data.csv \
+            --output site/data/consumersim_site_data.csv
 
       - name: Run tests
         run: python -m pytest -q

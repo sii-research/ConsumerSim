@@ -101,12 +101,13 @@
       <section class="hero-forecast-panel weekly-forecast-section" id="latest" aria-labelledby="hero-forecast-title">
         <div class="hero-forecast-head">
           <div>
-            <p class="eyebrow">Weekly forecast update</p>
+            <p class="eyebrow">Weekly nowcast update</p>
             <h2 id="hero-forecast-title">US, EU27, and Japan index paths</h2>
           </div>
           <div class="hero-legend" aria-label="Chart legend">
             <span><i class="line-key actual-line"></i> Monthly ground truth</span>
-            <span><i class="line-key forecast-line"></i> Weekly forecast</span>
+            <span><i class="line-key monthly-forecast-line"></i> Monthly forecast</span>
+            <span><i class="line-key forecast-line"></i> Weekly nowcast</span>
           </div>
         </div>
         <div class="hero-forecast-grid" id="hero-forecast-grid">
@@ -282,20 +283,20 @@
       <section class="updates" id="updates" aria-labelledby="updates-title">
         <div>
           <p class="eyebrow">Refresh protocol</p>
-          <h2 id="updates-title">Weekly update cycle</h2>
+          <h2 id="updates-title">Live update cycle</h2>
         </div>
         <ol class="update-list">
           <li>
-            <strong>Monday refresh</strong>
-            <span>pull latest survey releases, market context, and macro inputs.</span>
+            <strong>Scheduled data pull</strong>
+            <span>fetch latest Michigan, Eurostat, ESRI, FRED, market, and NYT/Guardian news inputs.</span>
           </li>
           <li>
-            <strong>Run ConsumerSim</strong>
-            <span>update regional predictions and compare against persistence baselines.</span>
+            <strong>Run ConsumerSim v4</strong>
+            <span>extrapolate US, EU27, and Japan household cohorts with frozen zero-lambda calibration.</span>
           </li>
           <li>
-            <strong>Publish update</strong>
-            <span>regenerate this static site data file and redeploy.</span>
+            <strong>Sync to GitHub Pages</strong>
+            <span>push validated CSV to the live-data branch and automatically redeploy this static site.</span>
           </li>
         </ol>
       </section>
